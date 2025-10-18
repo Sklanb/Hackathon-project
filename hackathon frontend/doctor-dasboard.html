@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard - Hospital Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            padding: 2rem 0;
+        }
+
+        .logo {
+            padding: 0 2rem 2rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .logo h2 {
+            color: #667eea;
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .logo p {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 1.5rem 0;
+        }
+
+        .nav-item {
+            padding: 0.875rem 2rem;
+            color: #4b5563;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: #f3f4f6;
+            color: #667eea;
+            border-left-color: #667eea;
+        }
+
+        .nav-item.active {
+            background: #eef2ff;
+            color: #667eea;
+            border-left-color: #667eea;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .header {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #1f2937;
+            font-size: 1.875rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h3 {
+            color: #6b7280;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            color: #1f2937;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat-card.patients { border-left: 4px solid #667eea; }
+        .stat-card.prescriptions { border-left: 4px solid #10b981; }
+        .stat-card.referrals { border-left: 4px solid #f59e0b; }
+        .stat-card.billing { border-left: 4px solid #ef4444; }
+
+        /* Content Sections */
+        .content-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .section-header h2 {
+            color: #1f2937;
+            font-size: 1.5rem;
+        }
+
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            color: #374151;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f9fafb;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            color: #6b7280;
+            font-weight: 600;
+            font-size: 0.875rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        td {
+            padding: 1rem;
+            color: #374151;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.875rem;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-info { background: #dbeafe; color: #1e40af; }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h2>MediCare</h2>
+                <p>Doctor Portal</p>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active">Dashboard</li>
+                <li class="nav-item">Patient Information</li>
+                <li class="nav-item">Prescriptions</li>
+                <li class="nav-item">Referrals</li>
+                <li class="nav-item">Billing</li>
+                <li class="nav-item">Appointments</li>
+                <li class="nav-item">Reports</li>
+                <li class="nav-item">Settings</li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <h1>Doctor Dashboard</h1>
+                <div class="user-info">
+                    <div>
+                        <p style="font-weight: 600; color: #1f2937;">Dr. Sarah Johnson</p>
+                        <p style="font-size: 0.875rem; color: #6b7280;">Cardiologist</p>
+                    </div>
+                    <div class="user-avatar">SJ</div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card patients">
+                    <h3>Today's Patients</h3>
+                    <p>24</p>
+                </div>
+                <div class="stat-card prescriptions">
+                    <h3>Prescriptions Written</h3>
+                    <p>18</p>
+                </div>
+                <div class="stat-card referrals">
+                    <h3>Referrals Made</h3>
+                    <p>5</p>
+                </div>
+                <div class="stat-card billing">
+                    <h3>Pending Bills</h3>
+                    <p>12</p>
+                </div>
+            </div>
+
+            <!-- Enter Patient Information -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2>Enter Patient Information</h2>
+                </div>
+                <form>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Patient ID</label>
+                            <input type="text" placeholder="P-2024-001">
+                        </div>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label>Date of Birth</label>
+                            <input type="date">
+                        </div>
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select>
+                                <option>Select Gender</option>
+                                <option>Male</option>
+                                <option>Female</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Blood Type</label>
+                            <select>
+                                <option>Select Blood Type</option>
+                                <option>A+</option>
+                                <option>A-</option>
+                                <option>B+</option>
+                                <option>B-</option>
+                                <option>AB+</option>
+                                <option>AB-</option>
+                                <option>O+</option>
+                                <option>O-</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Number</label>
+                            <input type="tel" placeholder="+1 (555) 123-4567">
+                        </div>
+                        <div class="form-group">
+                            <label>Emergency Contact</label>
+                            <input type="tel" placeholder="+1 (555) 987-6543">
+                        </div>
+                        <div class="form-group">
+                            <label>Insurance Provider</label>
+                            <input type="text" placeholder="Blue Cross">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Medical History</label>
+                        <textarea placeholder="Enter patient's medical history, allergies, chronic conditions..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Current Symptoms</label>
+                        <textarea placeholder="Describe current symptoms and complaints..."></textarea>
+                    </div>
+                    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                        <button type="submit" class="btn btn-primary">Save Patient Information</button>
+                        <button type="reset" class="btn btn-secondary">Clear Form</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Enter Prescription Information -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2>Enter Prescription Information</h2>
+                </div>
+                <form>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Patient ID</label>
+                            <input type="text" placeholder="P-2024-001">
+                        </div>
+                        <div class="form-group">
+                            <label>Patient Name</label>
+                            <input type="text" placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label>Diagnosis</label>
+                            <input type="text" placeholder="Enter diagnosis">
+                        </div>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date">
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0;">
+                        <h3 style="color: #1f2937; margin-bottom: 1rem;">Medication Details</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Medication Name</label>
+                                <input type="text" placeholder="e.g., Amoxicillin">
+                            </div>
+                            <div class="form-group">
+                                <label>Dosage</label>
+                                <input type="text" placeholder="e.g., 500mg">
+                            </div>
+                            <div class="form-group">
+                                <label>Frequency</label>
+                                <select>
+                                    <option>Select Frequency</option>
+                                    <option>Once daily</option>
+                                    <option>Twice daily</option>
+                                    <option>Three times daily</option>
+                                    <option>Four times daily</option>
+                                    <option>As needed</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Duration</label>
+                                <input type="text" placeholder="e.g., 7 days">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Special Instructions</label>
+                            <textarea placeholder="Take with food, avoid alcohol, etc."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Additional Notes</label>
+                        <textarea placeholder="Any additional notes or warnings..."></textarea>
+                    </div>
+                    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                        <button type="submit" class="btn btn-primary">Issue Prescription</button>
+                        <button type="button" class="btn btn-secondary">Add Another Medication</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Recommend Patients to Doctors -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2>Recommend Patients to Specialists</h2>
+                </div>
+                <form>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Patient ID</label>
+                            <input type="text" placeholder="P-2024-001">
+                        </div>
+                        <div class="form-group">
+                            <label>Patient Name</label>
+                            <input type="text" placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label>Specialist Type</label>
+                            <select>
+                                <option>Select Specialty</option>
+                                <option>Cardiologist</option>
+                                <option>Neurologist</option>
+                                <option>Orthopedic</option>
+                                <option>Dermatologist</option>
+                                <option>Psychiatrist</option>
+                                <option>Oncologist</option>
+                                <option>Endocrinologist</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Referring Doctor</label>
+                            <select>
+                                <option>Select Doctor</option>
+                                <option>Dr. Michael Chen - Cardiologist</option>
+                                <option>Dr. Emily Rodriguez - Neurologist</option>
+                                <option>Dr. James Wilson - Orthopedic</option>
+                                <option>Dr. Lisa Anderson - Dermatologist</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Priority Level</label>
+                            <select>
+                                <option>Normal</option>
+                                <option>Urgent</option>
+                                <option>Emergency</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Preferred Date</label>
+                            <input type="date">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Reason for Referral</label>
+                        <textarea placeholder="Describe the reason for specialist referral, symptoms, test results..."></textarea>
+                    </div>
+                    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                        <button type="submit" class="btn btn-primary">Submit Referral</button>
+                        <button type="reset" class="btn btn-secondary">Clear Form</button>
+                    </div>
+                </form>
+
+                <!-- Recent Referrals Table -->
+                <div style="margin-top: 2rem;">
+                    <h3 style="color: #1f2937; margin-bottom: 1rem;">Recent Referrals</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Patient ID</th>
+                                    <th>Patient Name</th>
+                                    <th>Referred To</th>
+                                    <th>Specialty</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>P-2024-045</td>
+                                    <td>Robert Smith</td>
+                                    <td>Dr. Michael Chen</td>
+                                    <td>Cardiology</td>
+                                    <td>2024-01-15</td>
+                                    <td><span class="badge badge-success">Scheduled</span></td>
+                                </tr>
+                                <tr>
+                                    <td>P-2024-038</td>
+                                    <td>Maria Garcia</td>
+                                    <td>Dr. Emily Rodriguez</td>
+                                    <td>Neurology</td>
+                                    <td>2024-01-14</td>
+                                    <td><span class="badge badge-warning">Pending</span></td>
+                                </tr>
+                                <tr>
+                                    <td>P-2024-029</td>
+                                    <td>David Lee</td>
+                                    <td>Dr. James Wilson</td>
+                                    <td>Orthopedic</td>
+                                    <td>2024-01-13</td>
+                                    <td><span class="badge badge-success">Completed</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Billing Management -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2>Billing Management</h2>
+                </div>
+                <form>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Patient ID</label>
+                            <input type="text" placeholder="P-2024-001">
+                        </div>
+                        <div class="form-group">
+                            <label>Patient Name</label>
+                            <input type="text" placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label>Service Type</label>
+                            <select>
+                                <option>Select Service</option>
+                                <option>Consultation</option>
+                                <option>Diagnostic Test</option>
+                                <option>Surgery</option>
+                                <option>Emergency Care</option>
+                                <option>Follow-up Visit</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Service Date</label>
+                            <input type="date">
+                        </div>
+                        <div class="form-group">
+                            <label>Amount ($)</label>
+                            <input type="number" placeholder="0.00" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Method</label>
+                            <select>
+                                <option>Select Method</option>
+                                <option>Insurance</option>
+                                <option>Cash</option>
+                                <option>Credit Card</option>
+                                <option>Debit Card</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Service Description</label>
+                        <textarea placeholder="Detailed description of services provided..."></textarea>
+                    </div>
+                    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                        <button type="submit" class="btn btn-primary">Generate Bill</button>
+                        <button type="reset" class="btn btn-secondary">Clear Form</button>
+                    </div>
+                </form>
+
+                <!-- Billing Records Table -->
+                <div style="margin-top: 2rem;">
+                    <h3 style="color: #1f2937; margin-bottom: 1rem;">Recent Billing Records</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Bill ID</th>
+                                    <th>Patient Name</th>
+                                    <th>Service</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>B-2024-156</td>
+                                    <td>John Doe</td>
+                                    <td>Consultation</td>
+                                    <td>2024-01-15</td>
+                                    <td>$150.00</td>
+                                    <td><span class="badge badge-success">Paid</span></td>
+                                </tr>
+                                <tr>
+                                    <td>B-2024-155</td>
+                                    <td>Jane Smith</td>
+                                    <td>Diagnostic Test</td>
+                                    <td>2024-01-15</td>
+                                    <td>$320.00</td>
+                                    <td><span class="badge badge-warning">Pending</span></td>
+                                </tr>
+                                <tr>
+                                    <td>B-2024-154</td>
+                                    <td>Michael Brown</td>
+                                    <td>Follow-up Visit</td>
+                                    <td>2024-01-14</td>
+                                    <td>$80.00</td>
+                                    <td><span class="badge badge-success">Paid</span></td>
+                                </tr>
+                                <tr>
+                                    <td>B-2024-153</td>
+                                    <td>Sarah Wilson</td>
+                                    <td>Emergency Care</td>
+                                    <td>2024-01-14</td>
+                                    <td>$850.00</td>
+                                    <td><span class="badge badge-danger">Overdue</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
