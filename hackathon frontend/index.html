@@ -1,13 +1,444 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>hackathon</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            padding: 20px 0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            color: #0284c7;
+            font-weight: 700;
+        }
+
+        .login-btn {
+            background: #0ea5e9;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .login-btn:hover {
+            background: #0284c7;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .hero h2 {
+            font-size: 48px;
+            color: #0f172a;
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #dbeafe;
+            color: #0284c7;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* Roles Section */
+        .roles {
+            padding: 60px 20px;
+        }
+
+        .roles h3 {
+            text-align: center;
+            font-size: 36px;
+            color: #0f172a;
+            margin-bottom: 50px;
+            font-weight: 700;
+        }
+
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .role-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .role-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .role-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .role-card.admin .role-icon {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        }
+
+        .role-card.doctor .role-icon {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+        }
+
+        .role-card.nurse .role-icon {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .role-card.patient .role-icon {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .role-card h4 {
+            font-size: 24px;
+            color: #0f172a;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .role-card p {
+            color: #64748b;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+
+        .role-card ul {
+            list-style: none;
+        }
+
+        .role-card li {
+            color: #475569;
+            padding: 8px 0;
+            padding-left: 24px;
+            position: relative;
+            font-size: 14px;
+        }
+
+        .role-card li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #0ea5e9;
+            font-weight: bold;
+        }
+
+        /* Features Section */
+        .features {
+            background: white;
+            padding: 60px 20px;
+            border-radius: 24px;
+            margin: 0 20px 60px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        .features h3 {
+            text-align: center;
+            font-size: 32px;
+            color: #0f172a;
+            margin-bottom: 40px;
+            font-weight: 700;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            background: #dbeafe;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 28px;
+        }
+
+        .feature-item h5 {
+            font-size: 18px;
+            color: #0f172a;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .feature-item p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        /* CTA Section */
+        .cta {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .cta h3 {
+            font-size: 36px;
+            color: #0f172a;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .cta p {
+            font-size: 18px;
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+            padding: 16px 48px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 4px 16px rgba(14, 165, 233, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(14, 165, 233, 0.4);
+        }
+
+        /* Footer */
+        footer {
+            background: #0f172a;
+            color: #94a3b8;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        footer p {
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .hero h2 {
+                font-size: 36px;
+            }
+
+            .roles h3, .cta h3 {
+                font-size: 28px;
+            }
+
+            .roles-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">+</div>
+                    <h1>MediCare System</h1>
+                </div>
+                <a href="#" class="login-btn">Login</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <span class="badge">Secure Healthcare Management</span>
+                <h2>Hospital Database System</h2>
+                <p>Comprehensive role-based platform for seamless healthcare management and patient care coordination</p>
+            </div>
+        </section>
+
+        <section class="roles">
+            <div class="container">
+                <h3>Role-Based Access Control</h3>
+                <div class="roles-grid">
+                    <div class="role-card admin">
+                        <div class="role-icon">⚙️</div>
+                        <h4>Administrator</h4>
+                        <p>Complete system control and oversight</p>
+                        <ul>
+                            <li>Manage all users and roles</li>
+                            <li>System configuration</li>
+                            <li>View comprehensive analytics</li>
+                            <li>Access control management</li>
+                            <li>Audit logs and reports</li>
+                        </ul>
+                    </div>
+
+                    <div class="role-card doctor">
+                        <div class="role-icon">👨‍⚕️</div>
+                        <h4>Doctor</h4>
+                        <p>Patient care and medical records</p>
+                        <ul>
+                            <li>View assigned patients</li>
+                            <li>Create medical records</li>
+                            <li>Manage appointments</li>
+                            <li>Prescribe medications</li>
+                            <li>Review patient history</li>
+                        </ul>
+                    </div>
+
+                    <div class="role-card nurse">
+                        <div class="role-icon">👩‍⚕️</div>
+                        <h4>Nurse</h4>
+                        <p>Patient monitoring and vitals tracking</p>
+                        <ul>
+                            <li>Record patient vitals</li>
+                            <li>Update medical charts</li>
+                            <li>Monitor all patients</li>
+                            <li>Medication administration</li>
+                            <li>Quick patient search</li>
+                        </ul>
+                    </div>
+
+                    <div class="role-card patient">
+                        <div class="role-icon">🧑</div>
+                        <h4>Patient</h4>
+                        <p>Personal health information access</p>
+                        <ul>
+                            <li>View medical records</li>
+                            <li>Check appointments</li>
+                            <li>Access test results</li>
+                            <li>View vitals history</li>
+                            <li>Contact healthcare team</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="container">
+                <h3>Key Features</h3>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">🔒</div>
+                        <h5>Secure Access</h5>
+                        <p>Role-based authentication ensuring data privacy and security</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📊</div>
+                        <h5>Real-time Data</h5>
+                        <p>Instant updates and synchronized information across all roles</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📱</div>
+                        <h5>Responsive Design</h5>
+                        <p>Access from any device - desktop, tablet, or mobile</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">⚡</div>
+                        <h5>Fast Performance</h5>
+                        <p>Optimized for speed and efficiency in critical healthcare scenarios</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <div class="container">
+                <h3>Ready to Get Started?</h3>
+                <p>Access your personalized dashboard and manage healthcare efficiently</p>
+                <a href="#" class="cta-btn">Access System</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 MediCare Hospital Management System</p>
+            <p>Secure • Reliable • Efficient</p>
+        </div>
+    </footer>
+</body>
 </html>
