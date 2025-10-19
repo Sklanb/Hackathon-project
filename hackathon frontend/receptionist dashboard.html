@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receptionist Dashboard - Hospital System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: white;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .nav-item {
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #555;
+        }
+
+        .nav-item:hover {
+            background: #f0f0f0;
+        }
+
+        .nav-item.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        .user-info {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .content-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .stat-card .number {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-waiting {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-in-progress {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .queue-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .queue-info h4 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .queue-info p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">🏥 MediCare</div>
+            <div class="nav-item active" onclick="showSection('overview')">Dashboard</div>
+            <div class="nav-item" onclick="showSection('checkin')">Patient Check-in</div>
+            <div class="nav-item" onclick="showSection('appointments')">Appointments</div>
+            <div class="nav-item" onclick="showSection('queue')">Patient Queue</div>
+            <div class="nav-item" onclick="showSection('payments')">Payments</div>
+            <div class="nav-item" onclick="showSection('visitors')">Visitor Management</div>
+            <div class="nav-item" onclick="showSection('records')">Medical Records</div>
+            <div class="nav-item" onclick="showSection('settings')">Settings</div>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <h1>Receptionist Dashboard</h1>
+                <div class="user-info">
+                    <strong>Sarah Johnson</strong> | Receptionist
+                </div>
+            </div>
+
+            <!-- Overview Section -->
+            <div id="overview" class="content-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Patients Today</h3>
+                        <div class="number">47</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>In Queue</h3>
+                        <div class="number">8</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Appointments</h3>
+                        <div class="number">23</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Payments Collected</h3>
+                        <div class="number">$3,240</div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h2>Today's Appointments</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Patient Name</th>
+                                <th>Doctor</th>
+                                <th>Department</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>09:00 AM</td>
+                                <td>John Smith</td>
+                                <td>Dr. Anderson</td>
+                                <td>Cardiology</td>
+                                <td><span class="status-badge status-completed">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>10:00 AM</td>
+                                <td>Emily Davis</td>
+                                <td>Dr. Martinez</td>
+                                <td>Neurology</td>
+                                <td><span class="status-badge status-in-progress">In Progress</span></td>
+                            </tr>
+                            <tr>
+                                <td>11:00 AM</td>
+                                <td>Michael Brown</td>
+                                <td>Dr. Lee</td>
+                                <td>Orthopedics</td>
+                                <td><span class="status-badge status-waiting">Waiting</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Patient Check-in Section -->
+            <div id="checkin" class="content-section">
+                <div class="content-card">
+                    <h2>Patient Check-in / Registration</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>First Name</label>
+                            <input type="text" placeholder="Enter first name">
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            <input type="text" placeholder="Enter last name">
+                        </div>
+                        <div class="form-group">
+                            <label>Date of Birth</label>
+                            <input type="date">
+                        </div>
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select>
+                                <option>Select gender</option>
+                                <option>Male</option>
+                                <option>Female</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" placeholder="(555) 123-4567">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" placeholder="patient@email.com">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Address</label>
+                            <input type="text" placeholder="Enter full address">
+                        </div>
+                        <div class="form-group">
+                            <label>Insurance Provider</label>
+                            <input type="text" placeholder="Insurance company name">
+                        </div>
+                        <div class="form-group">
+                            <label>Insurance ID</label>
+                            <input type="text" placeholder="Insurance ID number">
+                        </div>
+                        <div class="form-group">
+                            <label>Emergency Contact Name</label>
+                            <input type="text" placeholder="Contact name">
+                        </div>
+                        <div class="form-group">
+                            <label>Emergency Contact Phone</label>
+                            <input type="tel" placeholder="(555) 123-4567">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Reason for Visit</label>
+                            <textarea placeholder="Brief description of visit reason"></textarea>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary">Check-in Patient</button>
+                </div>
+            </div>
+
+            <!-- Appointments Section -->
+            <div id="appointments" class="content-section">
+                <div class="content-card">
+                    <h2>Schedule New Appointment</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Patient Name</label>
+                            <input type="text" placeholder="Search patient">
+                        </div>
+                        <div class="form-group">
+                            <label>Department</label>
+                            <select>
+                                <option>Select department</option>
+                                <option>Cardiology</option>
+                                <option>Neurology</option>
+                                <option>Orthopedics</option>
+                                <option>Pediatrics</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Doctor</label>
+                            <select>
+                                <option>Select doctor</option>
+                                <option>Dr. Anderson</option>
+                                <option>Dr. Martinez</option>
+                                <option>Dr. Lee</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Appointment Date</label>
+                            <input type="date">
+                        </div>
+                        <div class="form-group">
+                            <label>Appointment Time</label>
+                            <input type="time">
+                        </div>
+                        <div class="form-group">
+                            <label>Appointment Type</label>
+                            <select>
+                                <option>Consultation</option>
+                                <option>Follow-up</option>
+                                <option>Emergency</option>
+                                <option>Routine Check-up</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Notes</label>
+                            <textarea placeholder="Additional notes"></textarea>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary">Schedule Appointment</button>
+                </div>
+
+                <div class="content-card">
+                    <h2>Upcoming Appointments</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2024-01-20</td>
+                                <td>09:00 AM</td>
+                                <td>John Smith</td>
+                                <td>Dr. Anderson</td>
+                                <td>Consultation</td>
+                                <td>
+                                    <button class="btn btn-success btn-small">Confirm</button>
+                                    <button class="btn btn-danger btn-small">Cancel</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2024-01-20</td>
+                                <td>10:30 AM</td>
+                                <td>Emily Davis</td>
+                                <td>Dr. Martinez</td>
+                                <td>Follow-up</td>
+                                <td>
+                                    <button class="btn btn-success btn-small">Confirm</button>
+                                    <button class="btn btn-danger btn-small">Cancel</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Patient Queue Section -->
+            <div id="queue" class="content-section">
+                <div class="content-card">
+                    <h2>Current Patient Queue</h2>
+                    <div class="queue-item">
+                        <div class="queue-info">
+                            <h4>John Smith - #001</h4>
+                            <p>Dr. Anderson | Cardiology | Arrived: 9:45 AM</p>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-success btn-small">Call Patient</button>
+                            <button class="btn btn-primary btn-small">Update Status</button>
+                        </div>
+                    </div>
+                    <div class="queue-item">
+                        <div class="queue-info">
+                            <h4>Emily Davis - #002</h4>
+                            <p>Dr. Martinez | Neurology | Arrived: 10:15 AM</p>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-success btn-small">Call Patient</button>
+                            <button class="btn btn-primary btn-small">Update Status</button>
+                        </div>
+                    </div>
+                    <div class="queue-item">
+                        <div class="queue-info">
+                            <h4>Michael Brown - #003</h4>
+                            <p>Dr. Lee | Orthopedics | Arrived: 10:30 AM</p>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-success btn-small">Call Patient</button>
+                            <button class="btn btn-primary btn-small">Update Status</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payments Section -->
+            <div id="payments" class="content-section">
+                <div class="content-card">
+                    <h2>Process Payment</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Patient Name</label>
+                            <input type="text" placeholder="Search patient">
+                        </div>
+                        <div class="form-group">
+                            <label>Invoice Number</label>
+                            <input type="text" placeholder="INV-001">
+                        </div>
+                        <div class="form-group">
+                            <label>Amount Due</label>
+                            <input type="number" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Method</label>
+                            <select>
+                                <option>Cash</option>
+                                <option>Credit Card</option>
+                                <option>Debit Card</option>
+                                <option>Insurance</option>
+                                <option>Check</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Amount Paid</label>
+                            <input type="number" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Date</label>
+                            <input type="date">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Notes</label>
+                            <textarea placeholder="Payment notes"></textarea>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary">Process Payment</button>
+                </div>
+
+                <div class="content-card">
+                    <h2>Recent Payments</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Patient</th>
+                                <th>Invoice</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2024-01-15</td>
+                                <td>John Smith</td>
+                                <td>INV-1234</td>
+                                <td>$250.00</td>
+                                <td>Credit Card</td>
+                                <td><span class="status-badge status-completed">Paid</span></td>
+                            </tr>
+                            <tr>
+                                <td>2024-01-15</td>
+                                <td>Emily Davis</td>
+                                <td>INV-1235</td>
+                                <td>$180.00</td>
+                                <td>Insurance</td>
+                                <td><span class="status-badge status-in-progress">Pending</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Visitor Management Section -->
+            <div id="visitors" class="content-section">
+                <div class="content-card">
+                    <h2>Register Visitor</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Visitor Name</label>
+                            <input type="text" placeholder="Enter visitor name">
+                        </div>
+                        <div class="form-group">
+                            <label>Visiting Patient</label>
+                            <input type="text" placeholder="Patient name">
+                        </div>
+                        <div class="form-group">
+                            <label>Relationship</label>
+                            <select>
+                                <option>Family Member</option>
+                                <option>Friend</option>
+                                <option>Colleague</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Number</label>
+                            <input type="tel" placeholder="(555) 123-4567">
+                        </div>
+                        <div class="form-group">
+                            <label>Check-in Time</label>
+                            <input type="time">
+                        </div>
+                        <div class="form-group">
+                            <label>Room/Ward Number</label>
+                            <input type="text" placeholder="Room number">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Purpose of Visit</label>
+                            <textarea placeholder="Brief description"></textarea>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary">Register Visitor</button>
+                </div>
+
+                <div class="content-card">
+                    <h2>Current Visitors</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Visitor Name</th>
+                                <th>Patient</th>
+                                <th>Room</th>
+                                <th>Check-in Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Robert Johnson</td>
+                                <td>Mary Johnson</td>
+                                <td>Room 305</td>
+                                <td>10:30 AM</td>
+                                <td><button class="btn btn-danger btn-small">Check-out</button></td>
+                            </tr>
+                            <tr>
+                                <td>Lisa Anderson</td>
+                                <td>John Smith</td>
+                                <td>Room 412</td>
+                                <td>11:00 AM</td>
+                                <td><button class="btn btn-danger btn-small">Check-out</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Medical Records Section -->
+            <div id="records" class="content-section">
+                <div class="content-card">
+                    <h2>Medical Records Request</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Patient Name</label>
+                            <input type="text" placeholder="Search patient">
+                        </div>
+                        <div class="form-group">
+                            <label>Record Type</label>
+                            <select>
+                                <option>Complete Medical History</option>
+                                <option>Lab Results</option>
+                                <option>Imaging Reports</option>
+                                <option>Prescription History</option>
+                                <option>Discharge Summary</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Requested By</label>
+                            <input type="text" placeholder="Name of requester">
+                        </div>
+                        <div class="form-group">
+                            <label>Request Date</label>
+                            <input type="date">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Purpose of Request</label>
+                            <textarea placeholder="Reason for requesting records"></textarea>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary">Submit Request</button>
+                </div>
+
+                <div class="content-card">
+                    <h2>Pending Record Requests</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Patient</th>
+                                <th>Record Type</th>
+                                <th>Requested By</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>REQ-001</td>
+                                <td>John Smith</td>
+                                <td>Lab Results</td>
+                                <td>Dr. Anderson</td>
+                                <td><span class="status-badge status-in-progress">Processing</span></td>
+                                <td><button class="btn btn-success btn-small">Complete</button></td>
+                            </tr>
+                            <tr>
+                                <td>REQ-002</td>
+                                <td>Emily Davis</td>
+                                <td>Complete History</td>
+                                <td>Insurance Company</td>
+                                <td><span class="status-badge status-waiting">Pending</span></td>
+                                <td><button class="btn btn-success btn-small">Complete</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settings" class="content-section">
+                <div class="content-card">
+                    <h2>Profile Settings</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" value="Sarah Johnson">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" value="s.johnson@hospital.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" value="(555) 987-6543">
+                        </div>
+                        <div class="form-group">
+                            <label>Department</label>
+                            <input type="text" value="Reception" readonly>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary">Update Profile</button>
+                </div>
+
+                <div class="content-card">
+                    <h2>Change Password</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Current Password</label>
+                            <input type="password" placeholder="Enter current password">
+                        </div>
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" placeholder="Enter new password">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary">Change Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Remove active class from all nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Add active class to clicked nav item
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
