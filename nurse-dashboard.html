@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nurse Dashboard - Hospital Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px 0;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .sidebar-header h2 {
+            color: #667eea;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            padding: 15px 20px;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: #f8f9ff;
+            border-left-color: #667eea;
+            color: #667eea;
+        }
+
+        .nav-item.active {
+            background: #f8f9ff;
+            border-left-color: #667eea;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .top-bar {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .top-bar h1 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            color: #333;
+            font-size: 22px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        /* Form Styles */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #555;
+            margin-left: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        /* Table Styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table thead {
+            background: #f8f9ff;
+        }
+
+        .data-table th {
+            padding: 15px;
+            text-align: left;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 14px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .data-table td {
+            padding: 15px;
+            color: #555;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .data-table tbody tr:hover {
+            background: #f8f9ff;
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-completed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .stat-card .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .top-bar {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+
+    .nav-item
+    {
+      cursor: pointer;
+    }    
+    
+    .nav-item-patient
+    {
+      cursor: pointer;
+    }
+
+    .nav-item-prescriptions
+    {
+      cursor: pointer;
+    }
+
+    .nav-item-referrals
+    {
+      cursor: pointer;
+    }
+
+    .nav-item-billing
+    {
+      cursor: pointer;
+    }
+
+    .nav-item-settings
+    {
+      cursor: pointer;
+    }
+
+        .nav-item-logout
+    {
+      cursor: pointer;
+    }
+
+        /* Hide sections by default */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Show dashboard stats by default */
+        .card-grid {
+            display: grid;
+        }
+
+  </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>🏥 MediCare</h2>
+                <p>Nurse Portal</p>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active js-nav-item">📊 Dashboard</li>
+                <li class="nav-item-patient js-nav-item-patient">👤 Patient Info</li>
+                <li class="nav-item-prescriptions js-nav-item-prescriptions">💊 Prescriptions</li>
+                <li class="nav-item-referrals js-nav-item-referrals">👨‍⚕️ Referrals</li>
+                <li class="nav-item-billing js-nav-item-billing">💳 Billing</li>
+                <li class="nav-item-settings js-nav-item-settings">⚙️ Settings</li>
+                <li class="nav-item-logout js-nav-item-logout">🚪 Logout</li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <h1>Nurse Dashboard</h1>
+                <div class="user-info">
+                    <div>
+                        <div style="font-weight: 600; color: #333;">Sarah Johnson</div>
+                        <div style="font-size: 14px; color: #666;">Registered Nurse</div>
+                    </div>
+                    <div class="user-avatar">SJ</div>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="card-grid">
+                <div class="stat-card">
+                    <h3>Total Patients Today</h3>
+                    <div class="stat-value">24</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <h3>Pending Prescriptions</h3>
+                    <div class="stat-value">8</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <h3>Referrals Made</h3>
+                    <div class="stat-value">5</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                    <h3>Billing Processed</h3>
+                    <div class="stat-value">$2,450</div>
+                </div>
+            </div>
+
+            <!-- Enter Patient Information -->
+            <section class="content-section" id="patient-info-section">
+                <h2 class="section-title">Enter Patient Information</h2>
+                <form>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Patient ID</label>
+                            <input type="text" placeholder="Enter patient ID">
+                        </div>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" placeholder="Enter full name">
+                        </div>
+                        <div class="form-group">
+                            <label>Date of Birth</label>
+                            <input type="date">
+                        </div>
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select>
+                                <option>Select gender</option>
+                                <option>Male</option>
+                                <option>Female</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Blood Type</label>
+                            <select>
+                                <option>Select blood type</option>
+                                <option>A+</option>
+                                <option>A-</option>
+                                <option>B+</option>
+                                <option>B-</option>
+                                <option>AB+</option>
+                                <option>AB-</option>
+                                <option>O+</option>
+                                <option>O-</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Number</label>
+                            <input type="tel" placeholder="Enter contact number">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Address</label>
+                            <input type="text" placeholder="Enter full address">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Medical History</label>
+                            <textarea placeholder="Enter medical history, allergies, current medications..."></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Current Symptoms</label>
+                            <textarea placeholder="Describe current symptoms and vital signs..."></textarea>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary">Save Patient Information</button>
+                    <button type="button" class="btn btn-secondary">Clear Form</button>
+                </form>
+            </section>
+
+            <!-- Viewing Prescriptions -->
+            <section class="content-section" id="prescriptions-section">
+                <h2 class="section-title">View Prescriptions</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Patient Name</th>
+                            <th>Medication</th>
+                            <th>Dosage</th>
+                            <th>Frequency</th>
+                            <th>Prescribed By</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>John Smith</td>
+                            <td>Amoxicillin</td>
+                            <td>500mg</td>
+                            <td>3x daily</td>
+                            <td>Dr. Williams</td>
+                            <td><span class="badge badge-active">Active</span></td>
+                        </tr>
+                        <tr>
+                            <td>Emily Davis</td>
+                            <td>Lisinopril</td>
+                            <td>10mg</td>
+                            <td>1x daily</td>
+                            <td>Dr. Martinez</td>
+                            <td><span class="badge badge-active">Active</span></td>
+                        </tr>
+                        <tr>
+                            <td>Michael Brown</td>
+                            <td>Metformin</td>
+                            <td>850mg</td>
+                            <td>2x daily</td>
+                            <td>Dr. Johnson</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        <tr>
+                            <td>Sarah Wilson</td>
+                            <td>Atorvastatin</td>
+                            <td>20mg</td>
+                            <td>1x daily</td>
+                            <td>Dr. Williams</td>
+                            <td><span class="badge badge-completed">Completed</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Recommend Patients to Doctors -->
+            <section class="content-section" id="referrals-section">
+                <h2 class="section-title">Recommend Patients to Doctors</h2>
+                <form>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Patient Name</label>
+                            <select>
+                                <option>Select patient</option>
+                                <option>John Smith</option>
+                                <option>Emily Davis</option>
+                                <option>Michael Brown</option>
+                                <option>Sarah Wilson</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Recommend to Doctor</label>
+                            <select>
+                                <option>Select doctor</option>
+                                <option>Dr. Williams - Cardiology</option>
+                                <option>Dr. Martinez - Internal Medicine</option>
+                                <option>Dr. Johnson - Endocrinology</option>
+                                <option>Dr. Anderson - Neurology</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Priority Level</label>
+                            <select>
+                                <option>Normal</option>
+                                <option>Urgent</option>
+                                <option>Emergency</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Preferred Date</label>
+                            <input type="date">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Reason for Referral</label>
+                            <textarea placeholder="Describe the reason for referring this patient to the specialist..."></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Additional Notes</label>
+                            <textarea placeholder="Any additional information the doctor should know..."></textarea>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary">Submit Referral</button>
+                    <button type="button" class="btn btn-secondary">Cancel</button>
+                </form>
+            </section>
+
+            <!-- Billing -->
+            <section class="content-section" id="billing-section">
+                <h2 class="section-title">Billing Management</h2>
+                <form>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Patient Name</label>
+                            <select>
+                                <option>Select patient</option>
+                                <option>John Smith</option>
+                                <option>Emily Davis</option>
+                                <option>Michael Brown</option>
+                                <option>Sarah Wilson</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Service Type</label>
+                            <select>
+                                <option>Select service</option>
+                                <option>Consultation</option>
+                                <option>Laboratory Tests</option>
+                                <option>X-Ray/Imaging</option>
+                                <option>Medication</option>
+                                <option>Emergency Care</option>
+                                <option>Surgery</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Amount ($)</label>
+                            <input type="number" placeholder="Enter amount">
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Method</label>
+                            <select>
+                                <option>Select payment method</option>
+                                <option>Cash</option>
+                                <option>Credit Card</option>
+                                <option>Debit Card</option>
+                                <option>Insurance</option>
+                                <option>Bank Transfer</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Description</label>
+                            <textarea placeholder="Enter billing description and details..."></textarea>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary">Process Billing</button>
+                    <button type="button" class="btn btn-secondary">Generate Invoice</button>
+                </form>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px; color: #333;">Recent Billing Records</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Invoice ID</th>
+                            <th>Patient Name</th>
+                            <th>Service</th>
+                            <th>Amount</th>
+                            <th>Payment Method</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#INV-001</td>
+                            <td>John Smith</td>
+                            <td>Consultation</td>
+                            <td>$150</td>
+                            <td>Insurance</td>
+                            <td><span class="badge badge-completed">Paid</span></td>
+                        </tr>
+                        <tr>
+                            <td>#INV-002</td>
+                            <td>Emily Davis</td>
+                            <td>Laboratory Tests</td>
+                            <td>$320</td>
+                            <td>Credit Card</td>
+                            <td><span class="badge badge-completed">Paid</span></td>
+                        </tr>
+                        <tr>
+                            <td>#INV-003</td>
+                            <td>Michael Brown</td>
+                            <td>X-Ray</td>
+                            <td>$200</td>
+                            <td>Cash</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+      <script>
+        // Data storage and statistics
+        let patientData = JSON.parse(localStorage.getItem('patientData')) || {};
+        let dashboardStats = JSON.parse(localStorage.getItem('dashboardStats')) || {
+          totalPatientsToday: 24,
+          pendingPrescriptions: 8,
+          referralsMade: 5,
+          billingProcessed: 2450
+        };
+
+        // Get current user information from login
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || {
+          username: 'Sarah Johnson',
+          role: 'nurse'
+        };
+
+        // Sample patient data for demonstration
+        if (Object.keys(patientData).length === 0) {
+          patientData = {
+            'P001': {
+              id: 'P001',
+              name: 'John Smith',
+              dob: '1985-03-15',
+              gender: 'Male',
+              bloodType: 'O+',
+              contact: '555-0123',
+              address: '123 Main St, City, State',
+              medicalHistory: 'Diabetes Type 2, Hypertension',
+              currentSymptoms: 'Chest pain, shortness of breath'
+            },
+            'P002': {
+              id: 'P002',
+              name: 'Emily Davis',
+              dob: '1990-07-22',
+              gender: 'Female',
+              bloodType: 'A+',
+              contact: '555-0456',
+              address: '456 Oak Ave, City, State',
+              medicalHistory: 'Asthma, Allergic to Penicillin',
+              currentSymptoms: 'Cough, fever, body aches'
+            },
+            'P003': {
+              id: 'P003',
+              name: 'Michael Brown',
+              dob: '1978-11-08',
+              gender: 'Male',
+              bloodType: 'B-',
+              contact: '555-0789',
+              address: '789 Pine Rd, City, State',
+              medicalHistory: 'High cholesterol, Family history of heart disease',
+              currentSymptoms: 'Headache, dizziness, fatigue'
+            }
+          };
+          localStorage.setItem('patientData', JSON.stringify(patientData));
+        }
+
+        // Navigation functionality
+        const navItems = {
+          dashboard: document.querySelector('.js-nav-item'),
+          patient: document.querySelector('.js-nav-item-patient'),
+          prescriptions: document.querySelector('.js-nav-item-prescriptions'),
+          referrals: document.querySelector('.js-nav-item-referrals'),
+          billing: document.querySelector('.js-nav-item-billing'),
+          settings: document.querySelector('.js-nav-item-settings'),
+          logout: document.querySelector('.js-nav-item-logout')
+        };
+
+        const sections = {
+          dashboard: document.querySelector('.card-grid'),
+          patient: document.getElementById('patient-info-section'),
+          prescriptions: document.getElementById('prescriptions-section'),
+          referrals: document.getElementById('referrals-section'),
+          billing: document.getElementById('billing-section')
+        };
+
+        // Function to update dashboard statistics
+        function updateDashboardStats() {
+          const statCards = document.querySelectorAll('.stat-value');
+          if (statCards.length >= 4) {
+            statCards[0].textContent = dashboardStats.totalPatientsToday;
+            statCards[1].textContent = dashboardStats.pendingPrescriptions;
+            statCards[2].textContent = dashboardStats.referralsMade;
+            statCards[3].textContent = `$${dashboardStats.billingProcessed.toLocaleString()}`;
+          }
+          localStorage.setItem('dashboardStats', JSON.stringify(dashboardStats));
+        }
+
+        // Function to update user information display
+        function updateUserInfo() {
+          const usernameElement = document.querySelector('.user-info div div');
+          const roleElement = document.querySelector('.user-info div div:last-child');
+          const avatarElement = document.querySelector('.user-avatar');
+          
+          if (usernameElement) {
+            usernameElement.textContent = currentUser.username;
+          }
+          
+          if (roleElement) {
+            const roleDisplay = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+            roleElement.textContent = roleDisplay === 'Nurse' ? 'Registered Nurse' : roleDisplay;
+          }
+          
+          if (avatarElement) {
+            // Generate initials from username
+            const initials = currentUser.username.split(' ').map(name => name.charAt(0)).join('').toUpperCase();
+            avatarElement.textContent = initials;
+          }
+        }
+
+        // Function to populate patient form with existing data
+        function populatePatientForm(patient) {
+          const form = document.querySelector('#patient-info-section form');
+          const inputs = form.querySelectorAll('input, select, textarea');
+          
+          inputs.forEach(input => {
+            const fieldName = input.previousElementSibling.textContent.toLowerCase().replace(/\s+/g, '');
+            switch(fieldName) {
+              case 'patientid':
+                input.value = patient.id;
+                break;
+              case 'fullname':
+                input.value = patient.name;
+                break;
+              case 'dateofbirth':
+                input.value = patient.dob;
+                break;
+              case 'gender':
+                input.value = patient.gender;
+                break;
+              case 'bloodtype':
+                input.value = patient.bloodType;
+                break;
+              case 'contactnumber':
+                input.value = patient.contact;
+                break;
+              case 'address':
+                input.value = patient.address;
+                break;
+              case 'medicalhistory':
+                input.value = patient.medicalHistory;
+                break;
+              case 'currentsymptoms':
+                input.value = patient.currentSymptoms;
+                break;
+            }
+          });
+        }
+
+        // Function to clear patient form
+        function clearPatientForm() {
+          const form = document.querySelector('#patient-info-section form');
+          const inputs = form.querySelectorAll('input, select, textarea');
+          inputs.forEach(input => {
+            if (input.type !== 'button') {
+              input.value = '';
+            }
+          });
+        }
+
+        // Function to save patient data
+        function savePatientData() {
+          const form = document.querySelector('#patient-info-section form');
+          const inputs = form.querySelectorAll('input, select, textarea');
+          
+          const patient = {};
+          inputs.forEach(input => {
+            if (input.type !== 'button') {
+              const fieldName = input.previousElementSibling.textContent.toLowerCase().replace(/\s+/g, '');
+              patient[fieldName] = input.value;
+            }
+          });
+
+          if (patient.patientid) {
+            patientData[patient.patientid] = patient;
+            localStorage.setItem('patientData', JSON.stringify(patientData));
+            
+            // Update patient count if it's a new patient
+            if (!patientData[patient.patientid]) {
+              dashboardStats.totalPatientsToday++;
+              updateDashboardStats();
+            }
+            
+            alert('Patient information saved successfully!');
+          } else {
+            alert('Please enter a Patient ID');
+          }
+        }
+
+        // Function to hide all sections
+        function hideAllSections() {
+          Object.values(sections).forEach(section => {
+            if (section) {
+              section.classList.remove('active');
+            }
+          });
+        }
+
+        // Function to remove active class from all nav items
+        function removeActiveFromNavItems() {
+          Object.values(navItems).forEach(item => {
+            if (item) {
+              item.classList.remove('active');
+            }
+          });
+        }
+
+        // Function to show specific section
+        function showSection(sectionKey) {
+          hideAllSections();
+          removeActiveFromNavItems();
+          
+          if (sections[sectionKey]) {
+            sections[sectionKey].classList.add('active');
+          }
+          
+          if (navItems[sectionKey]) {
+            navItems[sectionKey].classList.add('active');
+          }
+        }
+
+        // Add event listeners to navigation items
+        navItems.dashboard.addEventListener('click', () => showSection('dashboard'));
+        navItems.patient.addEventListener('click', () => showSection('patient'));
+        navItems.prescriptions.addEventListener('click', () => showSection('prescriptions'));
+        navItems.referrals.addEventListener('click', () => showSection('referrals'));
+        navItems.billing.addEventListener('click', () => showSection('billing'));
+        navItems.settings.addEventListener('click', () => {
+          alert('Settings functionality coming soon!');
+        });
+        navItems.logout.addEventListener('click', () => {
+          window.location.href = 'loginpage.html';
+        });
+
+        // Initialize - show dashboard by default
+        showSection('dashboard');
+        updateDashboardStats();
+        updateUserInfo();
+
+        // Patient ID lookup functionality
+        document.addEventListener('DOMContentLoaded', function() {
+          const patientIdInput = document.querySelector('#patient-info-section input[placeholder="Enter patient ID"]');
+          if (patientIdInput) {
+            patientIdInput.addEventListener('blur', function() {
+              const patientId = this.value.trim();
+              if (patientId && patientData[patientId]) {
+                populatePatientForm(patientData[patientId]);
+              }
+            });
+          }
+
+          // Patient form buttons
+          const savePatientBtn = document.querySelector('#patient-info-section .btn-primary');
+          const clearPatientBtn = document.querySelector('#patient-info-section .btn-secondary');
+          
+          if (savePatientBtn) {
+            savePatientBtn.addEventListener('click', savePatientData);
+          }
+          
+          if (clearPatientBtn) {
+            clearPatientBtn.addEventListener('click', clearPatientForm);
+          }
+
+          // Referral form submission
+          const submitReferralBtn = document.querySelector('#referrals-section .btn-primary');
+          if (submitReferralBtn) {
+            submitReferralBtn.addEventListener('click', function() {
+              dashboardStats.referralsMade++;
+              updateDashboardStats();
+              alert('Referral submitted successfully!');
+            });
+          }
+
+          // Billing form submission
+          const processBillingBtn = document.querySelector('#billing-section .btn-primary');
+          if (processBillingBtn) {
+            processBillingBtn.addEventListener('click', function() {
+              const amountInput = document.querySelector('#billing-section input[placeholder="Enter amount"]');
+              const amount = parseFloat(amountInput.value) || 0;
+              dashboardStats.billingProcessed += amount;
+              updateDashboardStats();
+              alert('Billing processed successfully!');
+            });
+          }
+
+          // Prescription processing (simulate adding new prescription)
+          const prescriptionRows = document.querySelectorAll('#prescriptions-section tbody tr');
+          prescriptionRows.forEach(row => {
+            const statusBadge = row.querySelector('.badge');
+            if (statusBadge && statusBadge.textContent === 'Pending') {
+              statusBadge.addEventListener('click', function() {
+                if (confirm('Mark this prescription as completed?')) {
+                  this.textContent = 'Completed';
+                  this.className = 'badge badge-completed';
+                  dashboardStats.pendingPrescriptions--;
+                  updateDashboardStats();
+                }
+              });
+            }
+          });
+        });
+      </script>
+</body>
+</html>
